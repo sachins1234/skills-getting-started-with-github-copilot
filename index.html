@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Room View App (Feet & Inches)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: auto; }
+        h1 { color: #2c3e50; }
+        .images { display: flex; gap: 20px; margin-bottom: 30px; }
+        .images img { max-width: 180px; border-radius: 8px; border: 1px solid #ccc; }
+        .form-section { margin-bottom: 30px; }
+        .room-view { margin-top: 20px; }
+        #room-rectangle {
+            background: #e6f3ff;
+            border: 2px solid #3498db;
+            margin: 10px 0;
+            transition: width 0.3s, height 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        label, input { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Room View App</h1>
+        <div class="images">
+            <img src="https://via.placeholder.com/180x120?text=Room+1" alt="Room sample 1">
+            <img src="https://via.placeholder.com/180x120?text=Room+2" alt="Room sample 2">
+            <img src="https://via.placeholder.com/180x120?text=Room+3" alt="Room sample 3">
+        </div>
+        <div class="form-section">
+            <h2>Enter Room Dimensions</h2>
+            <form id="dimensions-form">
+                <label>
+                    Width:
+                    <input type="number" id="widthFeet" name="widthFeet" min="0" max="100" required> ft
+                    <input type="number" id="widthInches" name="widthInches" min="0" max="11" value="0"> in
+                </label>
+                <label style="margin-left: 20px;">
+                    Length:
+                    <input type="number" id="lengthFeet" name="lengthFeet" min="0" max="100" required> ft
+                    <input type="number" id="lengthInches" name="lengthInches" min="0" max="11" value="0"> in
+                </label>
+                <button type="submit">Show Room View</button>
+            </form>
+        </div>
+        <div class="room-view" id="room-view">
+            <!-- Room rectangle will appear here -->
+        </div>
+    </div>
+    <script>
+        function totalInches(feet, inches) {
+            return (parseInt(feet, 10) || 0) * 12 + (parseInt(inches, 10) || 0);
+        }
+
+        function formatFeetInches(inches) {
+            const feet = Math.floor(inches / 12);
+            const inch = inches % 12;
+            return `${feet}ft ${inch}in`;
+        }
+
+        document.getElementById('dimensions-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const widthFeet = document.getElementById('widthFeet').value;
+            const widthInches = document.getElementById('widthInches').value;
+            const lengthFeet = document.getElementById('lengthFeet').value;
+            const lengthInches = document.getElementById('lengthInches').value;
+
+            const widthTotalInches = totalInches(widthFeet, widthInches);
+            const lengthTotalInches = totalInches(lengthFeet, lengthInches);
+
+            // Scale dimensions for display (max 400px)
+            const maxPx = 400;
+            const scale = Math.min(maxPx / Math.max(widthTotalInches, lengthTotalInches), 2); // 1 inch = 2px max scaling
+            const pxWidth = widthTotalInches * scale;
+            const pxLength = lengthTotalInches * scale;
+
+            const roomRect = document.createElement('div');
+            roomRect.id = 'room-rectangle';
+            roomRect.style.width = pxWidth + 'px';
+            roomRect.style.height = pxLength + 'px';
+            roomRect.textContent = `${formatFeetInches(widthTotalInches)} x ${formatFeetInches(lengthTotalInches)}`;
+
+            const roomView = document.getElementById('room-view');
+            roomView.innerHTML = '';
+            roomView.appendChild(roomRect);
+        });
+    </script>
+</body>
+</html>
